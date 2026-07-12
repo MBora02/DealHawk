@@ -1,0 +1,368 @@
+@model DealHawk.Application.DTOs.GameDto
+@{
+    ViewData["Title"] = Model.Title;
+    var priceHistory = ViewBag.PriceHistory as List<DealHawk.Application.DTOs.PriceHistoryDto> ?? new List<DealHawk.Application.DTOs.PriceHistoryDto>();
+    var reviews = ViewBag.Reviews as List<DealHawk.Application.DTOs.ReviewDto> ?? new List<DealHawk.Application.DTOs.ReviewDto>();
+    var lowestPrice = Model.CurrentPrices.OrderBy(p => p.Price).FirstOrDefault()?.Price ?? 0;
+}
+
+<div class="row pt-4">
+
+    <div class="col-lg-4 mb-4 align-self-start">
+        @{
+            var initialImgUrl = !string.IsNullOrEmpty(Model.SteamAppId) && Model.SteamAppId != "0" && !string.Equals(Model.SteamAppId, "null", StringComparison.OrdinalIgnoreCase)
+                ? $"https://cdn.akamai.steamstatic.com/steam/apps/{Model.SteamAppId}/library_600x900.jpg"
+                : (string.IsNullOrEmpty(Model.ThumbnailUrl) ? "https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&w=400&q=80" : Model.ThumbnailUrl);
+        }
+        <div class="game-detail-img-container mb-4">
+            <div class="game-img-blur-bg" style="background-image: url('@initialImgUrl');"></div>
+            <img src="@initialImgUrl" onerror="handleImageError(this, '@Model.SteamAppId', '@(string.IsNullOrEmpty(Model.ThumbnailUrl) ? "https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&w=400&q=80" : Model.ThumbnailUrl)')" class="game-img" alt="@Model.Title"/>
+        </div>
+
+        <div class="card-custom mb-4" style="height: auto;">
+            <h4 class="fw-bold mb-3"><i class="fa-solid fa-bell text-cyan me-2"></i>Configure Alerts</h4>
+            <p class="text-secondary text-sm mb-3">Set your target price and we will notify you immediately once the lowest store price falls below it.</p>
+
+            @if (User.Identity?.IsAuthenticated == true)
+            {
+                <form asp-controller="Dashboard" asp-action="CreateAlert" method="post">
+                    <input type="hidden" name="gameId" value="@Model.Id"/>
+                    <div class="mb-3">
+                        <label class="form-label text-secondary fw-semibold">Target Price ($)</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-secondary border-0 text-secondary">$</span>
+                            <input type="number" step="0.01" name="targetPrice" class="form-control form-control-custom" placeholder="e.g. 19.99" required="required"/>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary-custom w-100">Set Price Alert</button>
+                </form>
+            }
+            else
+            {
+                <div class="d-grid">
+                    <a asp-controller="Auth" asp-action="Login" class="btn btn-secondary-custom btn-sm">
+                        <i class="fa-solid fa-lock me-2"></i>Login to Create Alert
+                    </a>
+                </div>
+            }
+        </div>
+
+        @if (User.Identity?.IsAuthenticated == true)
+        {
+            <div class="d-flex gap-2 mb-4">
+                <form asp-controller="Dashboard" asp-action="ToggleFavoriteFromDetails" method="post" class="flex-grow-1">
+                    <input type="hidden" name="gameId" value="@Model.Id"/>
+                    <button type="submit" class="btn btn-secondary-custom w-100">
+                        <i class="fa-solid fa-heart text-rose me-2"></i>Favorite
+                    </button>
+                </form>
+                <form asp-controller="Dashboard" asp-action="ToggleWishlistFromDetails" method="post" class="flex-grow-1">
+                    <input type="hidden" name="gameId" value="@Model.Id"/>
+                    <button type="submit" class="btn btn-secondary-custom w-100">
+                        <i class="fa-solid fa-bookmark text-cyan me-2"></i>Wishlist
+                    </button>
+                </form>
+            </div>
+        }
+
+        <div class="card-custom text-center" style="height: auto;">
+            <h4 class="fw-bold mb-3" style="font-size: 1.15rem;"><i class="fa-solid fa-qrcode text-cyan me-2"></i>Open on Mobile</h4>
+            <div class="d-flex justify-content-center mb-2">
+                <div id="qrcode" class="p-2 bg-white rounded shadow-sm" style="display: inline-block;"></div>
+            </div>
+            <p class="text-secondary m-0" style="font-size: 0.8rem;">Scan to view this deal on your phone</p>
+        </div>
+    </div>
+
+    <div class="col-lg-8">
+
+        <div class="mb-4">
+            <h1 class="display-5 fw-bold mb-2">@Model.Title</h1>
+            <div class="d-flex flex-wrap align-items-center mb-3">
+                <div class="rating-badge me-3">
+                    <i class="fa-solid fa-star me-1 text-light"></i>@(Model.AverageRating > 0 ? Model.AverageRating.ToString("F1") : "N/A")
+                </div>
+                <span class="detail-pill">Publisher: @Model.PublisherName</span>
+                @if (Model.ReleaseDate.HasValue)
+                {
+                    <span class="detail-pill">Released: @Model.ReleaseDate.Value.ToString("yyyy-MM-dd")</span>
+                }
+            </div>
+
+            <div class="mb-3">
+                @foreach (var genre in Model.Genres)
+                {
+                    <span class="badge bg-dark text-cyan me-1 border border-secondary px-3 py-2">@genre</span>
+                }
+                @foreach (var platform in Model.Platforms)
+                {
+                    <span class="badge bg-secondary text-light me-1 px-3 py-2">@platform</span>
+                }
+            </div>
+        </div>
+
+        <ul class="nav nav-tabs nav-tabs-custom mb-4" id="detailsTabs" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="deals-tab" data-bs-toggle="tab" data-bs-target="#deals-pane" type="button" role="tab" aria-controls="deals-pane" aria-selected="true">
+                    <i class="fa-solid fa-tags text-cyan me-2"></i>Compare Store Deals
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="history-tab" data-bs-toggle="tab" data-bs-target="#history-pane" type="button" role="tab" aria-controls="history-pane" aria-selected="false">
+                    <i class="fa-solid fa-chart-line text-purple me-2"></i>Price Trend History
+                </button>
+            </li>
+        </ul>
+
+        <div class="tab-content mb-4" id="detailsTabsContent">
+
+            <div class="tab-pane fade show active" id="deals-pane" role="tabpanel" aria-labelledby="deals-tab">
+                @if (Model.CurrentPrices == null || !Model.CurrentPrices.Any())
+                {
+                    <div class="card-custom text-center py-4 mb-4" style="height: auto;">
+                        <p class="text-secondary mb-0">No active store deals available currently.</p>
+                    </div>
+                }
+                else
+                {
+                    <div class="table-responsive mb-4">
+                        <table class="table table-custom">
+                            <thead>
+                                <tr>
+                                    <th>Store</th>
+                                    <th>Discount</th>
+                                    <th>Original Price</th>
+                                    <th>Current Price</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var deal in Model.CurrentPrices.OrderBy(d => d.Price))
+                                {
+                                    <tr>
+                                        <td>
+                                            <div class="d-flex align-items-center">
+                                                <img src="@deal.StoreLogoUrl" class="me-2" style="width: 32px; height: 32px; object-fit: contain;"/>
+                                                <strong>@deal.StoreName</strong>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            @if (deal.SavingsPercent > 0)
+                                            {
+                                                <span class="badge bg-danger">-@((int)deal.SavingsPercent)% OFF</span>
+                                            }
+                                            else
+                                            {
+                                                <span class="text-secondary">-</span>
+                                            }
+                                        </td>
+                                        <td>$@deal.RetailPrice.ToString("F2")</td>
+                                        <td><strong class="text-emerald font-monospace" style="font-size: 1.15rem;">$@deal.Price.ToString("F2")</strong></td>
+                                        <td>
+                                            <a href="@deal.DeepLinkUrl" target="_blank" class="btn btn-primary-custom btn-sm">
+                                                Go to Store<i class="fa-solid fa-up-right-from-square ms-1"></i>
+                                            </a>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+            </div>
+
+            <div class="tab-pane fade" id="history-pane" role="tabpanel" aria-labelledby="history-tab">
+                <div class="chart-container-custom mb-0">
+                    @if (!priceHistory.Any())
+                    {
+                        <p class="text-secondary text-center mb-0 py-5">No historical price snapshots captured yet.</p>
+                    }
+                    else
+                    {
+                        <canvas id="priceHistoryChart" style="max-height: 300px; width: 100%;"></canvas>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h4 class="fw-bold m-0"><i class="fa-solid fa-comments text-cyan me-2"></i>Reviews & Ratings</h4>
+            @if (User.Identity?.IsAuthenticated == true)
+            {
+                <button type="button" class="btn btn-secondary-custom btn-sm" data-bs-toggle="collapse" data-bs-target="#writeReviewCollapse">
+                    <i class="fa-solid fa-pen-to-square me-1 text-cyan"></i>Write Review
+                </button>
+            }
+        </div>
+
+        <div class="collapse mb-4" id="writeReviewCollapse">
+            <div class="card-custom" style="height: auto;">
+                <h5 class="fw-bold mb-3">Share your opinion</h5>
+                <form asp-action="SubmitReview" method="post">
+                    <input type="hidden" name="gameId" value="@Model.Id"/>
+                    <div class="row mb-3">
+                        <div class="col-md-4">
+                            <label class="form-label text-secondary fw-semibold">Rating</label>
+                            <select name="rating" class="form-select form-control-custom" required="required">
+                                <option value="5">⭐⭐⭐⭐⭐ (5 - Amazing)</option>
+                                <option value="4">⭐⭐⭐⭐ (4 - Very Good)</option>
+                                <option value="3">⭐⭐⭐ (3 - Average)</option>
+                                <option value="2">⭐⭐ (2 - Poor)</option>
+                                <option value="1">⭐ (1 - Terrible)</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label text-secondary fw-semibold">Comment</label>
+                        <textarea name="comment" rows="3" class="form-control form-control-custom" placeholder="Write your review here... (max 500 characters)" required="required"></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary-custom btn-sm">Submit for Moderation</button>
+                </form>
+            </div>
+        </div>
+
+        <div class="card-custom" style="height: auto;">
+            @if (!reviews.Any())
+            {
+                <p class="text-secondary text-center mb-0 py-4">No approved reviews for this game yet. Be the first to share your rating!</p>
+            }
+            else
+            {
+                @foreach (var review in reviews)
+                {
+                    <div class="review-item">
+                        <div class="d-flex justify-content-between mb-2">
+                            <div>
+                                <strong>@review.Username</strong>
+                                <span class="text-secondary ms-2" style="font-size: 0.85rem;">@review.CreatedAt.ToString("yyyy-MM-dd")</span>
+                            </div>
+                            <div class="star-rating">
+                                @for (int i = 0; i < 5; i++)
+                                {
+                                    if (i < review.Rating)
+                                    {
+                                        <i class="fa-solid fa-star"></i>
+                                    }
+                                    else
+                                    {
+                                        <i class="fa-regular fa-star"></i>
+                                    }
+                                }
+                            </div>
+                        </div>
+                        <p class="mb-3">@review.Comment</p>
+                        <div class="d-flex align-items-center">
+                            <form asp-action="LikeReview" method="post" class="me-3">
+                                <input type="hidden" name="reviewId" value="@review.Id"/>
+                                <input type="hidden" name="gameId" value="@Model.Id"/>
+                                <button type="submit" class="btn btn-sm btn-dark @(review.IsLikedByCurrentUser ? "text-cyan" : "text-secondary") border border-secondary">
+                                    <i class="fa-solid fa-thumbs-up me-1"></i>@review.LikesCount Likes
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                }
+            }
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const qrEl = document.getElementById("qrcode");
+            if (qrEl) {
+                new QRCode(qrEl, {
+                    text: window.location.href,
+                    width: 120,
+                    height: 120,
+                    colorDark : "#0b0f19",
+                    colorLight : "#ffffff",
+                    correctLevel : QRCode.CorrectLevel.H
+                });
+            }
+        });
+    </script>
+
+    @if (priceHistory.Any())
+    {
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+        <script>
+            document.addEventListener("DOMContentLoaded", function () {
+                const ctx = document.getElementById('priceHistoryChart').getContext('2d');
+
+                const historyData = @Html.Raw(Json.Serialize(priceHistory));
+
+                const storeGroups = {};
+                historyData.forEach(item => {
+                    if (!storeGroups[item.storeName]) {
+                        storeGroups[item.storeName] = [];
+                    }
+                    storeGroups[item.storeName].push({
+                        x: new Date(item.recordedAt).toLocaleDateString(),
+                        y: item.price
+                    });
+                });
+
+                const colors = ['#06b6d4', '#8b5cf6', '#10b981', '#f59e0b', '#f43f5e', '#a855f7'];
+                let colorIdx = 0;
+
+                const datasets = [];
+                for (const store in storeGroups) {
+                    datasets.push({
+                        label: store,
+                        data: storeGroups[store],
+                        borderColor: colors[colorIdx % colors.length],
+                        backgroundColor: colors[colorIdx % colors.length] + '1A',
+                        borderWidth: 2,
+                        tension: 0.1,
+                        fill: false
+                    });
+                    colorIdx++;
+                }
+
+                const chartInstance = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        datasets: datasets
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                labels: {
+                                    color: '#9ca3af',
+                                    font: { family: 'Outfit', size: 12 }
+                                }
+                            }
+                        },
+                        scales: {
+                            x: {
+                                type: 'category',
+                                grid: { color: 'rgba(255, 255, 255, 0.05)' },
+                                ticks: { color: '#9ca3af', font: { family: 'Outfit' } }
+                            },
+                            y: {
+                                grid: { color: 'rgba(255, 255, 255, 0.05)' },
+                                ticks: {
+                                    color: '#9ca3af',
+                                    font: { family: 'Outfit' },
+                                    callback: function(value) { return '$' + value.toFixed(2); }
+                                }
+                            }
+                        }
+                    }
+                });
+
+                const historyTab = document.getElementById('history-tab');
+                if (historyTab) {
+                    historyTab.addEventListener('shown.bs.tab', function () {
+                        chartInstance.resize();
+                    });
+                }
+            });
+        </script>
+    }
+}

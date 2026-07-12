@@ -1,0 +1,67 @@
+@{
+    string GetActiveCls(string action)
+    {
+        var currentAction = ViewContext.RouteData.Values["Action"]?.ToString();
+        return string.Equals(currentAction, action, StringComparison.OrdinalIgnoreCase)
+            ? "list-group-item-active"
+            : "";
+    }
+}
+
+<div class="card-custom p-0 overflow-hidden">
+    <div class="px-4 py-3 border-bottom border-secondary bg-dark-subtle">
+        <h5 class="fw-bold m-0 text-cyan"><i class="fa-solid fa-gauge-high me-2"></i>Navigation</h5>
+    </div>
+    <div class="list-group list-group-flush bg-transparent">
+        <a asp-action="Index" class="list-group-item list-group-item-action bg-transparent text-light border-secondary py-3 px-4 d-flex align-items-center @GetActiveCls("Index")">
+            <i class="fa-solid fa-gears text-cyan me-3" style="width: 20px;"></i>
+            <span>Overview</span>
+        </a>
+        <a asp-action="Users" class="list-group-item list-group-item-action bg-transparent text-light border-secondary py-3 px-4 d-flex align-items-center @GetActiveCls("Users")">
+            <i class="fa-solid fa-users text-purple me-3" style="width: 20px;"></i>
+            <span>Users</span>
+        </a>
+        <a asp-action="Games" class="list-group-item list-group-item-action bg-transparent text-light border-secondary py-3 px-4 d-flex align-items-center @GetActiveCls("Games")">
+            <i class="fa-solid fa-gamepad text-emerald me-3" style="width: 20px;"></i>
+            <span>Games</span>
+        </a>
+        <a asp-action="Genres" class="list-group-item list-group-item-action bg-transparent text-light border-secondary py-3 px-4 d-flex align-items-center @GetActiveCls("Genres")">
+            <i class="fa-solid fa-tags text-warning me-3" style="width: 20px;"></i>
+            <span>Genres</span>
+        </a>
+        <a asp-action="Stores" class="list-group-item list-group-item-action bg-transparent text-light border-secondary py-3 px-4 d-flex align-items-center @GetActiveCls("Stores")">
+            <i class="fa-solid fa-store text-info me-3" style="width: 20px;"></i>
+            <span>Stores</span>
+        </a>
+        <a asp-action="Favorites" class="list-group-item list-group-item-action bg-transparent text-light border-secondary py-3 px-4 d-flex align-items-center @GetActiveCls("Favorites")">
+            <i class="fa-solid fa-star text-danger me-3" style="width: 20px;"></i>
+            <span>Favorites</span>
+        </a>
+        <a asp-action="Reviews" class="list-group-item list-group-item-action bg-transparent text-light border-secondary py-3 px-4 d-flex align-items-center @GetActiveCls("Reviews")">
+            <i class="fa-solid fa-comments text-primary me-3" style="width: 20px;"></i>
+            <span>Reviews</span>
+        </a>
+    </div>
+</div>
+
+<style>
+    .list-group-item-action {
+        transition: var(--transition);
+        border-left: 3px solid transparent !important;
+    }
+    .list-group-item-action:hover {
+        background-color: var(--bg-card-hover) !important;
+        color: var(--text-primary) !important;
+        border-left: 3px solid var(--accent-cyan) !important;
+        padding-left: 28px !important;
+    }
+    .list-group-item-active {
+        background-color: rgba(6, 182, 212, 0.1) !important;
+        color: var(--text-primary) !important;
+        border-left: 3px solid var(--accent-cyan) !important;
+        font-weight: 600;
+    }
+    .text-emerald {
+        color: var(--accent-emerald) !important;
+    }
+</style>

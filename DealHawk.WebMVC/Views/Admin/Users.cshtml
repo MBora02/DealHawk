@@ -1,0 +1,100 @@
+@model IEnumerable<DealHawk.Application.DTOs.UserAdminDto>
+@{
+    ViewData["Title"] = "Admin - Users";
+}
+
+<div class="pt-4">
+    <div class="mb-4">
+        <h2 class="fw-bold m-0"><i class="fa-solid fa-users text-purple me-2"></i>User Management</h2>
+        <p class="text-secondary m-0">View all registered user accounts and their assigned security roles</p>
+    </div>
+
+    <div class="row">
+
+        <div class="col-lg-3 mb-4">
+            <partial name="_AdminSidebar" />
+        </div>
+
+        <div class="col-lg-9">
+            <div class="card-custom h-auto">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h4 class="fw-bold m-0"><i class="fa-solid fa-address-book text-cyan me-2"></i>Accounts List</h4>
+                    <span class="badge bg-dark border border-secondary text-cyan px-3 py-2">@Model.Count() registered users</span>
+                </div>
+
+                @if (!Model.Any())
+                {
+                    <div class="text-center py-5 text-secondary">
+                        <i class="fa-solid fa-user-slash mb-3" style="font-size: 3rem;"></i>
+                        <p class="m-0">No users found.</p>
+                    </div>
+                }
+                else
+                {
+                    <div class="table-responsive">
+                        <table class="table table-custom">
+                            <thead>
+                                <tr>
+                                    <th>Full Name</th>
+                                    <th>Username</th>
+                                    <th>Email</th>
+                                    <th>Roles</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var u in Model)
+                                {
+                                    <tr>
+                                        <td>
+                                            <div class="d-flex align-items-center">
+                                                <div class="rounded-circle bg-dark-subtle border border-secondary d-flex align-items-center justify-content-center me-3" style="width: 40px; height: 40px;">
+                                                    <i class="fa-solid fa-user-astronaut text-cyan"></i>
+                                                </div>
+                                                <div>
+                                                    <strong class="text-light">@u.FullName</strong>
+                                                    <div class="text-secondary" style="font-size: 0.8rem;">ID: @u.Id</div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td><strong>@@@u.UserName</strong></td>
+                                        <td><a href="mailto:@u.Email" class="text-cyan text-decoration-none">@u.Email</a></td>
+                                        <td>
+                                            @foreach (var role in u.Roles)
+                                            {
+                                                var badgeCls = role switch
+                                                {
+                                                    "Admin" => "badge-admin",
+                                                    "Moderator" => "badge-mod",
+                                                    _ => "badge-user"
+                                                };
+                                                <span class="badge @badgeCls me-1">@role</span>
+                                            }
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .badge-admin {
+        background-color: rgba(139, 92, 246, 0.15) !important;
+        border: 1px solid var(--accent-purple) !important;
+        color: #c084fc !important;
+    }
+    .badge-mod {
+        background-color: rgba(6, 182, 212, 0.15) !important;
+        border: 1px solid var(--accent-cyan) !important;
+        color: #67e8f9 !important;
+    }
+    .badge-user {
+        background-color: rgba(255, 255, 255, 0.05) !important;
+        border: 1px solid var(--border-color) !important;
+        color: var(--text-secondary) !important;
+    }
+</style>

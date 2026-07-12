@@ -1,0 +1,21 @@
+@{
+    ViewData["Title"] = "Access Denied";
+}
+
+<div class="row justify-content-center align-items-center py-5">
+    <div class="col-md-6 text-center">
+        <div class="card-custom py-5">
+            <i class="fa-solid fa-triangle-exclamation text-rose mb-3" style="font-size: 4rem; text-shadow: 0 0 20px var(--accent-rose);"></i>
+            <h2 class="fw-bold mb-3">Access Denied</h2>
+            <p class="text-secondary mb-4">You do not have the required role or permissions to access this page. Please log in with appropriate credentials.</p>
+            <div class="d-flex justify-content-center gap-3">
+                <a asp-controller="Home" asp-action="Index" class="btn btn-secondary-custom btn-sm">
+                    Go to Homepage
+                </a>
+                <a asp-controller="Auth" asp-action="Login" class="btn btn-primary-custom btn-sm">
+                    Login with another account
+                </a>
+            </div>
+        </div>
+    </div>
+</div>

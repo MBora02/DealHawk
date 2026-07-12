@@ -1,0 +1,53 @@
+@{
+    ViewData["Title"] = "Login to DealHawk";
+}
+
+<div class="row justify-content-center align-items-center py-5">
+    <div class="col-md-5">
+        <div class="card-custom text-start">
+            <div class="text-center mb-4">
+                <i class="fa-solid fa-gamepad text-cyan mb-2" style="font-size: 2.5rem;"></i>
+                <h3 class="fw-bold">Welcome Back</h3>
+                <p class="text-secondary">Sign in to track your deals and alerts</p>
+            </div>
+
+            @if (ViewBag.Error != null)
+            {
+                <div class="alert alert-custom-danger mb-4" role="alert">
+                    <i class="fa-solid fa-triangle-exclamation me-2"></i>@ViewBag.Error
+                </div>
+            }
+
+            <form asp-action="Login" method="post">
+                <div class="mb-3">
+                    <label class="form-label text-secondary fw-semibold">Username or Email</label>
+                    <input type="text" name="username" class="form-control form-control-custom" placeholder="e.g. admin or admin@dealhawk.com" required="required"/>
+                </div>
+
+                <div class="mb-4">
+                    <div class="d-flex justify-content-between">
+                        <label class="form-label text-secondary fw-semibold">Password</label>
+                    </div>
+                    <input type="password" name="password" class="form-control form-control-custom" placeholder="••••••••" required="required"/>
+                </div>
+
+                <div class="d-grid mb-3">
+                    <button type="submit" class="btn btn-primary-custom">
+                        <i class="fa-solid fa-arrow-right-to-bracket me-2"></i>Sign In
+                    </button>
+                </div>
+
+                <div class="text-center">
+                    <span class="text-secondary">Don't have an account? </span>
+                    <a asp-action="Register" class="text-cyan fw-semibold" style="text-decoration: none;">Create one here</a>
+                </div>
+            </form>
+
+            <hr class="border-secondary my-4" />
+            <div class="text-center">
+                <p class="text-secondary mb-1" style="font-size: 0.85rem;">Development Credentials:</p>
+
+            </div>
+        </div>
+    </div>
+</div>

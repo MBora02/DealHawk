@@ -1,0 +1,8 @@
+<Solution>
+  <Project Path="DealHawk.API/DealHawk.API.csproj" />
+  <Project Path="DealHawk.Application/DealHawk.Application.csproj" />
+  <Project Path="DealHawk.Domain/DealHawk.Domain.csproj" />
+  <Project Path="DealHawk.Infrastructure/DealHawk.Infrastructure.csproj" />
+  <Project Path="DealHawk.Persistence/DealHawk.Persistence.csproj" />
+  <Project Path="DealHawk.WebMVC/DealHawk.WebMVC.csproj" />
+</Solution>

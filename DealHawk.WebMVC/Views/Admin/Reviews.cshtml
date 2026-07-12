@@ -1,0 +1,107 @@
+@model IEnumerable<DealHawk.Application.DTOs.ReviewAdminDto>
+@{
+    ViewData["Title"] = "Admin - Reviews";
+}
+
+<div class="pt-4">
+    <div class="mb-4">
+        <h2 class="fw-bold m-0"><i class="fa-solid fa-comments text-primary me-2"></i>Review Auditing</h2>
+        <p class="text-secondary m-0">Monitor and audit all customer ratings and moderation notes</p>
+    </div>
+
+    <div class="row">
+
+        <div class="col-lg-3 mb-4">
+            <partial name="_AdminSidebar" />
+        </div>
+
+        <div class="col-lg-9">
+            <div class="card-custom h-auto">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h4 class="fw-bold m-0"><i class="fa-solid fa-file-invoice text-cyan me-2"></i>All Reviews</h4>
+                    <span class="badge bg-dark border border-secondary text-cyan px-3 py-2">@Model.Count() total reviews</span>
+                </div>
+
+                @if (!Model.Any())
+                {
+                    <div class="text-center py-5 text-secondary">
+                        <i class="fa-regular fa-message mb-3" style="font-size: 3rem;"></i>
+                        <p class="m-0">No reviews recorded yet.</p>
+                    </div>
+                }
+                else
+                {
+                    <div class="table-responsive">
+                        <table class="table table-custom">
+                            <thead>
+                                <tr>
+                                    <th>Reviewer</th>
+                                    <th>Game</th>
+                                    <th>Rating</th>
+                                    <th>Comment</th>
+                                    <th>Status</th>
+                                    <th>Date</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var r in Model)
+                                {
+                                    <tr>
+                                        <td>
+                                            <div>
+                                                <strong class="text-light">@(string.IsNullOrEmpty(r.UserFullName) ? r.UserName : r.UserFullName)</strong>
+                                                <div class="text-secondary" style="font-size: 0.8rem;">@@@r.UserName</div>
+                                            </div>
+                                        </td>
+                                        <td><strong>@r.GameTitle</strong></td>
+                                        <td>
+                                            <div class="star-rating text-amber">
+                                                @for (int i = 1; i <= 5; i++)
+                                                {
+                                                    if (i <= r.Rating)
+                                                    {
+                                                        <i class="fa-solid fa-star"></i>
+                                                    }
+                                                    else
+                                                    {
+                                                        <i class="fa-regular fa-star"></i>
+                                                    }
+                                                }
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <span class="text-secondary" title="@r.Comment">
+                                                @(r.Comment.Length > 50 ? r.Comment.Substring(0, 47) + "..." : r.Comment)
+                                            </span>
+                                            @if (!string.IsNullOrEmpty(r.ModeratorNotes))
+                                            {
+                                                <div class="text-muted mt-1" style="font-size: 0.75rem;">
+                                                    <i class="fa-solid fa-user-shield me-1"></i>Notes: @r.ModeratorNotes
+                                                </div>
+                                            }
+                                        </td>
+                                        <td>
+                                            @if (string.Equals(r.Status, "Approved", StringComparison.OrdinalIgnoreCase))
+                                            {
+                                                <span class="badge bg-success-subtle border border-success text-success px-2 py-1">Approved</span>
+                                            }
+                                            else if (string.Equals(r.Status, "Rejected", StringComparison.OrdinalIgnoreCase))
+                                            {
+                                                <span class="badge bg-danger-subtle border border-danger text-danger px-2 py-1">Rejected</span>
+                                            }
+                                            else
+                                            {
+                                                <span class="badge bg-warning-subtle border border-warning text-warning px-2 py-1">Pending</span>
+                                            }
+                                        </td>
+                                        <td><span class="text-secondary" style="font-size: 0.85rem;">@r.CreatedAt.ToString("yyyy-MM-dd")</span></td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>

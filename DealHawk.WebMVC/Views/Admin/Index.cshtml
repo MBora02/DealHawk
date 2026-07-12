@@ -1,0 +1,216 @@
+@{
+    ViewData["Title"] = "Admin Control Panel";
+    var stats = ViewBag.Stats as DealHawk.Application.DTOs.DashboardStatsDto;
+    var auditLogs = ViewBag.AuditLogs as List<dynamic> ?? new List<dynamic>();
+    var syncLogs = ViewBag.SyncLogs as List<dynamic> ?? new List<dynamic>();
+}
+
+<div class="pt-4">
+    <div class="mb-4">
+        <h2 class="fw-bold m-0"><i class="fa-solid fa-gears text-cyan me-2"></i>Admin Control Panel</h2>
+        <p class="text-secondary m-0">Monitor database sizes, trigger sync pipelines, and audit system activities</p>
+    </div>
+
+    <div class="row">
+
+        <div class="col-lg-3 mb-4">
+            <partial name="_AdminSidebar" />
+        </div>
+
+        <div class="col-lg-9">
+
+            @if (stats != null)
+            {
+                <div class="row g-4 mb-4">
+                    <div class="col-sm-6 col-md-3">
+                        <div class="card-custom text-center py-4 px-2">
+                            <i class="fa-solid fa-gamepad text-cyan mb-2" style="font-size: 2rem;"></i>
+                            <h3 class="fw-bold">@stats.TotalGames</h3>
+                            <p class="text-secondary m-0" style="font-size: 0.9rem;">Total Games</p>
+                        </div>
+                    </div>
+                    <div class="col-sm-6 col-md-3">
+                        <div class="card-custom text-center py-4 px-2">
+                            <i class="fa-solid fa-users text-purple mb-2" style="font-size: 2rem;"></i>
+                            <h3 class="fw-bold">@stats.TotalUsers</h3>
+                            <p class="text-secondary m-0" style="font-size: 0.9rem;">Registered Users</p>
+                        </div>
+                    </div>
+                    <div class="col-sm-6 col-md-3">
+                        <div class="card-custom text-center py-4 px-2">
+                            <i class="fa-solid fa-bell text-warning mb-2" style="font-size: 2rem;"></i>
+                            <h3 class="fw-bold">@stats.TotalActiveAlerts</h3>
+                            <p class="text-secondary m-0" style="font-size: 0.9rem;">Active Alerts</p>
+                        </div>
+                    </div>
+                    <div class="col-sm-6 col-md-3">
+                        <div class="card-custom text-center py-4 px-2">
+                            <i class="fa-solid fa-star text-amber mb-2" style="font-size: 2rem;"></i>
+                            <h3 class="fw-bold">@stats.AverageReviewRating.ToString("F1")</h3>
+                            <p class="text-secondary m-0" style="font-size: 0.9rem;">Avg Rating</p>
+                        </div>
+                    </div>
+                </div>
+            }
+
+            <div class="row g-4">
+
+                <div class="col-xl-5">
+                    <div class="card-custom h-auto mb-4">
+                        <h4 class="fw-bold mb-3" style="font-size: 1.25rem;"><i class="fa-solid fa-arrow-rotate-left text-cyan me-2"></i>Sync Services</h4>
+                        <p class="text-secondary mb-4" style="font-size: 0.9rem;">Manual sync will call CheapShark endpoints, retrieve latest prices, verify user alerts, and trigger notification records immediately in a background job.</p>
+
+                        <form asp-action="TriggerSync" method="post" class="d-grid mb-3">
+                            <button type="submit" class="btn btn-primary-custom">
+                                <i class="fa-solid fa-rotate me-2"></i>Synchronize CheapShark
+                            </button>
+                        </form>
+
+                        <a href="http://localhost:5233/hangfire" target="_blank" class="btn btn-secondary-custom w-100 btn-sm">
+                            <i class="fa-solid fa-gauge me-2"></i>Open Hangfire Dashboard
+                        </a>
+                    </div>
+
+                    <div class="card-custom h-auto mb-4">
+                        <h4 class="fw-bold mb-3" style="font-size: 1.25rem;"><i class="fa-solid fa-cloud-arrow-down text-cyan me-2"></i>Bulk Game Importer</h4>
+                        <p class="text-secondary mb-4" style="font-size: 0.9rem;">Quickly pull 25 random games from CheapShark with comparison prices across all active stores (Steam, GOG, Epic Games, etc.) directly into your database.</p>
+
+                        <form asp-action="ImportBulk" method="post" class="d-grid">
+                            <input type="hidden" name="count" value="25"/>
+                            <button type="submit" class="btn btn-primary-custom" onclick="return confirm('This will call CheapShark and import 25 random games with their multi-store comparison pricing. Proceed?');">
+                                <i class="fa-solid fa-download me-2"></i>Import 25 Games
+                            </button>
+                        </form>
+                    </div>
+
+                    @if (stats?.StoreDealCounts != null && stats.StoreDealCounts.Any())
+                    {
+                        <div class="card-custom h-auto">
+                            <h4 class="fw-bold mb-3" style="font-size: 1.25rem;"><i class="fa-solid fa-chart-pie text-purple me-2"></i>Deals distribution</h4>
+                            <ul class="list-group list-group-flush bg-transparent">
+                                @foreach (var count in stats.StoreDealCounts)
+                                {
+                                    <li class="list-group-item bg-transparent text-light d-flex justify-content-between border-secondary py-2 px-0" style="font-size: 0.9rem;">
+                                        <span><i class="fa-solid fa-store text-cyan me-2"></i>@count.StoreName</span>
+                                        <span class="badge bg-dark border border-secondary text-cyan px-3">@count.DealCount deals</span>
+                                    </li>
+                                }
+                            </ul>
+                        </div>
+                    }
+                </div>
+
+                <div class="col-xl-7">
+                    <div class="card-custom h-100">
+
+                        <ul class="nav nav-tabs nav-tabs-custom" id="logTabs" role="tablist">
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link active" id="audit-tab" data-bs-toggle="tab" data-bs-target="#audit" type="button" role="tab" aria-controls="audit" aria-selected="true" style="font-size: 0.9rem; padding: 10px 15px;">
+                                    <i class="fa-solid fa-file-invoice me-2 text-cyan"></i>Security Audit
+                                </button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="sync-tab" data-bs-toggle="tab" data-bs-target="#sync" type="button" role="tab" aria-controls="sync" aria-selected="false" style="font-size: 0.9rem; padding: 10px 15px;">
+                                    <i class="fa-solid fa-clock-rotate-left me-2 text-purple"></i>Sync History
+                                </button>
+                            </li>
+                        </ul>
+
+                        <div class="tab-content" id="logTabsContent">
+
+                            <div class="tab-pane fade show active" id="audit" role="tabpanel" aria-labelledby="audit-tab">
+                                @if (auditLogs == null || !auditLogs.Any())
+                                {
+                                    <p class="text-secondary py-5 text-center">No security audit logs recorded yet.</p>
+                                }
+                                else
+                                {
+                                    <div class="table-responsive" style="max-height: 450px; overflow-y: auto;">
+                                        <table class="table table-custom table-sm" style="font-size: 0.85rem;">
+                                            <thead>
+                                                <tr>
+                                                    <th>User</th>
+                                                    <th>Action</th>
+                                                    <th>Details</th>
+                                                    <th>Timestamp</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                @foreach (var log in auditLogs)
+                                                {
+                                                    <tr>
+                                                        <td><strong>@log.GetProperty("username").GetString()</strong></td>
+                                                        <td><span class="badge bg-secondary">@log.GetProperty("action").GetString()</span></td>
+                                                        <td><span class="text-secondary">@log.GetProperty("details").GetString()</span></td>
+                                                        <td>@DateTime.Parse(log.GetProperty("timestamp").GetString()).ToString("yyyy-MM-dd HH:mm:ss")</td>
+                                                    </tr>
+                                                }
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                }
+                            </div>
+
+                            <div class="tab-pane fade" id="sync" role="tabpanel" aria-labelledby="sync-tab">
+                                @if (syncLogs == null || !syncLogs.Any())
+                                {
+                                    <p class="text-secondary py-5 text-center">No database synchronization logs recorded yet.</p>
+                                }
+                                else
+                                {
+                                    <div class="table-responsive" style="max-height: 450px; overflow-y: auto;">
+                                        <table class="table table-custom table-sm" style="font-size: 0.85rem;">
+                                            <thead>
+                                                <tr>
+                                                    <th>Job Name</th>
+                                                    <th>Start Time</th>
+                                                    <th>Duration</th>
+                                                    <th>Records</th>
+                                                    <th>Status</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                @foreach (var log in syncLogs)
+                                                {
+                                                    var status = log.GetProperty("status").GetInt32();
+                                                    var startTime = DateTime.Parse(log.GetProperty("startTime").GetString());
+                                                    var endTimeProp = log.GetProperty("endTime");
+                                                    var duration = "";
+                                                    if (endTimeProp.ValueKind != System.Text.Json.JsonValueKind.Null)
+                                                    {
+                                                        duration = (DateTime.Parse(endTimeProp.GetString()) - startTime).TotalSeconds.ToString("F1") + "s";
+                                                    }
+
+                                                    <tr>
+                                                        <td><strong>@log.GetProperty("jobName").GetString()</strong></td>
+                                                        <td>@startTime.ToString("yyyy-MM-dd HH:mm:ss")</td>
+                                                        <td>@duration</td>
+                                                        <td><strong class="text-cyan">@log.GetProperty("recordsProcessed").GetInt32()</strong></td>
+                                                        <td>
+                                                            @if (status == 1)
+                                                            {
+                                                                <span class="badge bg-success">Success</span>
+                                                            }
+                                                            else if (status == 2)
+                                                            {
+                                                                <span class="badge bg-danger" title="@log.GetProperty("errorMessage").GetString()">Failed</span>
+                                                            }
+                                                            else
+                                                            {
+                                                                <span class="badge bg-warning">Running</span>
+                                                            }
+                                                        </td>
+                                                    </tr>
+                                                }
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

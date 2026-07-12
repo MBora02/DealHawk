@@ -1,0 +1,73 @@
+@model IEnumerable<DealHawk.Application.DTOs.FavoriteAdminDto>
+@{
+    ViewData["Title"] = "Admin - Favorites";
+}
+
+<div class="pt-4">
+    <div class="mb-4">
+        <h2 class="fw-bold m-0"><i class="fa-solid fa-star text-danger me-2"></i>Global Favorites</h2>
+        <p class="text-secondary m-0">Audit catalog interest across the entire platform</p>
+    </div>
+
+    <div class="row">
+
+        <div class="col-lg-3 mb-4">
+            <partial name="_AdminSidebar" />
+        </div>
+
+        <div class="col-lg-9">
+            <div class="card-custom h-auto">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h4 class="fw-bold m-0"><i class="fa-solid fa-heart text-cyan me-2"></i>User Favorites Timeline</h4>
+                    <span class="badge bg-dark border border-secondary text-cyan px-3 py-2">@Model.Count() total bookmarks</span>
+                </div>
+
+                @if (!Model.Any())
+                {
+                    <div class="text-center py-5 text-secondary">
+                        <i class="fa-regular fa-star mb-3" style="font-size: 3rem;"></i>
+                        <p class="m-0">No favorites recorded yet.</p>
+                    </div>
+                }
+                else
+                {
+                    <div class="table-responsive">
+                        <table class="table table-custom">
+                            <thead>
+                                <tr>
+                                    <th>User</th>
+                                    <th>Game Title</th>
+                                    <th>Bookmarked At</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var f in Model)
+                                {
+                                    <tr>
+                                        <td>
+                                            <div>
+                                                <strong class="text-light">@(string.IsNullOrEmpty(f.UserFullName) ? f.UserName : f.UserFullName)</strong>
+                                                <div class="text-secondary" style="font-size: 0.8rem;">@@@f.UserName</div>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div class="d-flex align-items-center">
+                                                <img src="@f.GameCoverImageUrl"
+                                                     onerror="this.onerror=null; this.src='@(string.IsNullOrEmpty(f.GameThumbnailUrl) ? "https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&w=400&q=80" : f.GameThumbnailUrl)';"
+                                                     alt="@f.GameTitle"
+                                                     class="img-fluid rounded me-3"
+                                                     style="width: 80px; height: 35px; object-fit: cover; border: 1px solid var(--border-color);" />
+                                                <strong class="text-light">@f.GameTitle</strong>
+                                            </div>
+                                        </td>
+                                        <td><span class="text-secondary">@f.CreatedAt.ToString("yyyy-MM-dd HH:mm:ss")</span></td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>

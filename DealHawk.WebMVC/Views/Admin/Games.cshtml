@@ -1,0 +1,168 @@
+@model DealHawk.Application.DTOs.PaginatedListDto<DealHawk.Application.DTOs.GameDto>
+@{
+    ViewData["Title"] = "Admin - Games";
+    var search = ViewBag.Search as string;
+}
+
+<div class="pt-4">
+    <div class="mb-4">
+        <h2 class="fw-bold m-0"><i class="fa-solid fa-gamepad text-emerald me-2"></i>Game Management</h2>
+        <p class="text-secondary m-0">Browse titles catalog, search by name, and permanently delete records</p>
+    </div>
+
+    <div class="row">
+
+        <div class="col-lg-3 mb-4">
+            <partial name="_AdminSidebar" />
+        </div>
+
+        <div class="col-lg-9">
+            <div class="card-custom h-auto mb-4">
+                <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
+                    <h4 class="fw-bold m-0"><i class="fa-solid fa-layer-group text-cyan me-2"></i>Catalog List</h4>
+
+                    <form asp-action="Games" method="get" class="d-flex gap-2" style="max-width: 400px; width: 100%;">
+                        <div class="input-group">
+                            <span class="input-group-text bg-secondary border-secondary text-secondary">
+                                <i class="fa-solid fa-magnifying-glass"></i>
+                            </span>
+                            <input type="text" name="search" value="@search" placeholder="Search by game title..." class="form-control form-control-custom bg-secondary border-secondary text-light py-2" />
+                            @if (!string.IsNullOrEmpty(search))
+                            {
+                                <a asp-action="Games" class="btn btn-secondary-custom d-flex align-items-center justify-content-center border-secondary bg-secondary px-3" title="Clear search">
+                                    <i class="fa-solid fa-xmark"></i>
+                                </a>
+                            }
+                        </div>
+                        <button type="submit" class="btn btn-primary-custom px-3">Search</button>
+                    </form>
+                </div>
+
+                @if (!Model.Items.Any())
+                {
+                    <div class="text-center py-5 text-secondary">
+                        <i class="fa-solid fa-ban mb-3" style="font-size: 3rem;"></i>
+                        <p class="m-0">No games found matching search filters.</p>
+                    </div>
+                }
+                else
+                {
+                    <div class="table-responsive">
+                        <table class="table table-custom">
+                            <thead>
+                                <tr>
+                                    <th>Game Title</th>
+                                    <th>Release Date</th>
+                                    <th>Genres</th>
+                                    <th>CheapShark ID</th>
+                                    <th class="text-end">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var g in Model.Items)
+                                {
+                                    <tr>
+                                        <td>
+                                            <div class="d-flex align-items-center">
+                                                <img src="@g.CoverImageUrl"
+                                                     onerror="this.onerror=null; this.src='@(string.IsNullOrEmpty(g.ThumbnailUrl) ? "https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&w=400&q=80" : g.ThumbnailUrl)';"
+                                                     alt="@g.Title"
+                                                     class="img-fluid rounded me-3"
+                                                     style="width: 80px; height: 35px; object-fit: cover; border: 1px solid var(--border-color);" />
+                                                <div>
+                                                    <strong class="text-light">@g.Title</strong>
+                                                    @if (!string.IsNullOrEmpty(g.PublisherName))
+                                                    {
+                                                        <div class="text-secondary" style="font-size: 0.8rem;">Publisher: @g.PublisherName</div>
+                                                    }
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td>@(g.ReleaseDate?.ToString("yyyy-MM-dd") ?? "N/A")</td>
+                                        <td>
+                                            @if (g.Genres.Any())
+                                            {
+                                                <span class="text-secondary" style="font-size: 0.85rem;">@string.Join(", ", g.Genres)</span>
+                                            }
+                                            else
+                                            {
+                                                <span class="text-muted" style="font-size: 0.85rem;">None</span>
+                                            }
+                                        </td>
+                                        <td><code class="text-cyan">@g.CheapSharkGameId</code></td>
+                                        <td class="text-end">
+                                            <form asp-action="DeleteGame" method="post" onsubmit="return confirm('WARNING: Are you sure you want to permanently delete \'@g.Title\'? This will recursively remove all pricing records, user favorites, wishlist entries, and reviews associated with this game.');" class="d-inline">
+                                                <input type="hidden" name="id" value="@g.Id" />
+                                                <button type="submit" class="btn btn-outline-danger btn-sm border-danger-subtle px-3 py-1">
+                                                    <i class="fa-solid fa-trash-can me-1"></i>Delete
+                                                </button>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+
+                    var totalPages = (int)Math.Ceiling((double)Model.TotalCount / Model.PageSize);
+                    @if (totalPages > 1)
+                    {
+                        <div class="d-flex justify-content-between align-items-center mt-4">
+                            <span class="text-secondary" style="font-size: 0.9rem;">
+                                Showing <strong>@(((Model.PageNumber - 1) * Model.PageSize) + 1)</strong> to <strong>@(Math.Min(Model.PageNumber * Model.PageSize, Model.TotalCount))</strong> of <strong>@Model.TotalCount</strong> games
+                            </span>
+
+                            <nav aria-label="Page navigation">
+                                <ul class="pagination pagination-sm m-0">
+                                    <li class="page-item @(Model.PageNumber <= 1 ? "disabled" : "")">
+                                        <a class="page-link page-link-custom" asp-action="Games" asp-route-search="@search" asp-route-pageNumber="@(Model.PageNumber - 1)">
+                                            <i class="fa-solid fa-chevron-left"></i>
+                                        </a>
+                                    </li>
+
+                                    @for (int i = 1; i <= totalPages; i++)
+                                    {
+                                        if (i == 1 || i == totalPages || (i >= Model.PageNumber - 2 && i <= Model.PageNumber + 2))
+                                        {
+                                            <li class="page-item @(Model.PageNumber == i ? "active" : "")">
+                                                <a class="page-link page-link-custom" asp-action="Games" asp-route-search="@search" asp-route-pageNumber="@i">@i</a>
+                                            </li>
+                                        }
+                                        else if (i == 2 || i == totalPages - 1)
+                                        {
+                                            <li class="page-item disabled"><span class="page-link page-link-custom">...</span></li>
+                                        }
+                                    }
+
+                                    <li class="page-item @(Model.PageNumber >= totalPages ? "disabled" : "")">
+                                        <a class="page-link page-link-custom" asp-action="Games" asp-route-search="@search" asp-route-pageNumber="@(Model.PageNumber + 1)">
+                                            <i class="fa-solid fa-chevron-right"></i>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </nav>
+                        </div>
+                    }
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .btn-outline-danger {
+        color: #f43f5e;
+        border-color: rgba(244, 63, 94, 0.3);
+        transition: var(--transition);
+        background: transparent;
+    }
+    .btn-outline-danger:hover {
+        background-color: var(--accent-rose);
+        border-color: var(--accent-rose);
+        color: #fff;
+        box-shadow: 0 4px 12px rgba(244, 63, 94, 0.2);
+    }
+    .text-emerald {
+        color: var(--accent-emerald) !important;
+    }
+</style>

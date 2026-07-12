@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - DealHawk</title>
+
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/DealHawk.WebMVC.styles.css" asp-append-version="true" />
+</head>
+<body>
+    <header>
+        <nav class="navbar navbar-expand-lg navbar-dark navbar-custom mb-4">
+            <div class="container">
+                <a class="navbar-brand" asp-controller="Home" asp-action="Index">
+                    <i class="fa-solid fa-gamepad me-2 text-cyan"></i>Deal<span>Hawk</span>
+                </a>
+                <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav"
+                        aria-expanded="false" aria-label="Toggle navigation">
+                    <i class="fa-solid fa-bars text-white"></i>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                        <li class="nav-item">
+                            <a class="nav-link nav-link-custom" asp-controller="Home" asp-action="Index">
+                                <i class="fa-solid fa-house me-1"></i>Home
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link nav-link-custom" asp-controller="Games" asp-action="Index">
+                                <i class="fa-solid fa-magnifying-glass me-1"></i>Catalog
+                            </a>
+                        </li>
+                        @if (User.Identity?.IsAuthenticated == true)
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link nav-link-custom" asp-controller="Dashboard" asp-action="Index">
+                                    <i class="fa-solid fa-circle-user me-1"></i>Dashboard
+                                </a>
+                            </li>
+                            @if (User.IsInRole("Admin") || User.IsInRole("Moderator"))
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link nav-link-custom" asp-controller="Moderation" asp-action="Index">
+                                        <i class="fa-solid fa-shield-halved me-1"></i>Moderation
+                                    </a>
+                                </li>
+                            }
+                            @if (User.IsInRole("Admin"))
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link nav-link-custom" asp-controller="Admin" asp-action="Index">
+                                        <i class="fa-solid fa-gears me-1"></i>Admin Portal
+                                    </a>
+                                </li>
+                            }
+                        }
+                    </ul>
+
+                    <div class="d-flex align-items-center">
+                        @if (User.Identity?.IsAuthenticated == true)
+                        {
+                            @await Component.InvokeAsync("NotificationNav")
+
+                            <span class="text-light me-3">
+                                <i class="fa-solid fa-user-astronaut me-1 text-cyan"></i>Hello, <strong>@User.Identity.Name</strong>
+                            </span>
+                            <a class="btn btn-secondary-custom btn-sm" asp-controller="Auth" asp-action="Logout">
+                                <i class="fa-solid fa-right-from-bracket me-1"></i>Logout
+                            </a>
+                        }
+                        else
+                        {
+                            <a class="btn btn-secondary-custom btn-sm me-2" asp-controller="Auth" asp-action="Login">
+                                <i class="fa-solid fa-right-to-bracket me-1"></i>Login
+                            </a>
+                            <a class="btn btn-primary-custom btn-sm" asp-controller="Auth" asp-action="Register">
+                                <i class="fa-solid fa-user-plus me-1"></i>Register
+                            </a>
+                        }
+                    </div>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <div class="container main-content-grow">
+        @if (TempData["Success"] != null)
+        {
+            <div class="alert alert-custom-success alert-dismissible fade show mb-4" role="alert">
+                <i class="fa-solid fa-circle-check me-2"></i>@TempData["Success"]
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        }
+        @if (TempData["Error"] != null)
+        {
+            <div class="alert alert-custom-danger alert-dismissible fade show mb-4" role="alert">
+                <i class="fa-solid fa-circle-exclamation me-2"></i>@TempData["Error"]
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        }
+
+        <main role="main" class="pb-5">
+            @RenderBody()
+        </main>
+    </div>
+
+    <footer class="footer py-4 mt-auto">
+        <div class="container text-center">
+            <span class="text-secondary">&copy; 2026 - DealHawk - Compare prices & hunt game deals. Built with Onion Architecture & Clean Principles.</span>
+        </div>
+    </footer>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

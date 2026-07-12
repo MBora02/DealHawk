@@ -1,0 +1,13 @@
+@model int
+
+<div class="nav-item d-flex align-items-center">
+    <a class="nav-link position-relative me-3 text-secondary" asp-controller="Dashboard" asp-action="Index" asp-fragment="notifications" style="padding: 8px 12px;" title="Notifications">
+        <i class="fa-solid fa-bell text-warning" style="font-size: 1.15rem;"></i>
+        @if (Model > 0)
+        {
+            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger border border-dark" style="font-size: 0.65rem; padding: 0.25em 0.5em; z-index: 5; margin-left: -5px; margin-top: 5px;">
+                @Model
+            </span>
+        }
+    </a>
+</div>
