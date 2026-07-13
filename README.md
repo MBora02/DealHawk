@@ -413,9 +413,3 @@ Proposed enhancements to build upon the current codebase:
 This project is licensed under the **MIT License** - see the [LICENSE](file:///c:/Users/Bora/Desktop/DealHawk/LICENSE) file for details.
 
 
----
-
-## 👤 Author
-
-* **Bora** - Lead Developer / Architect (Inferred from project directories)
-* GitHub: [Bora's GitHub Profile](https://github.com/Bora) *(Placeholder)*
