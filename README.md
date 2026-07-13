@@ -15,16 +15,17 @@ DealHawk is a high-performance web application designed for gaming enthusiasts t
 1. [Project Summary](#-project-summary)
 2. [Project Overview](#-project-overview)
 3. [Architecture](#-architecture)
-4. [Features](#-features)
-5. [Technology Stack](#-technology-stack)
-6. [Project Structure](#-project-structure)
-7. [Database Design](#-database-design)
-8. [Installation & Setup](#-installation--setup)
-9. [Authentication & Authorization](#-authentication--authorization)
-10. [API Endpoints](#-api-endpoints)
-11. [Future Improvements](#-future-improvements)
-12. [License](#-license)
-13. [Author](#-author)
+4. [Core Database Tables](#-core-database-tables)
+5. [Features](#-features)
+6. [Technology Stack](#-technology-stack)
+7. [Project Structure](#-project-structure)
+8. [Database Design](#-database-design)
+9. [Installation & Setup](#-installation--setup)
+10. [Authentication & Authorization](#-authentication--authorization)
+11. [API Endpoints](#-api-endpoints)
+12. [Future Improvements](#-future-improvements)
+13. [License](#-license)
+14. [Author](#-author)
 
 ---
 
@@ -68,6 +69,37 @@ DealHawk is designed using the **Onion Architecture** (Clean Architecture) patte
 4. **DealHawk.Infrastructure (Outer Layer):** Connects to external interfaces. Implements the `CheapSharkService` to communicate with the CheapShark API, generates tokens via the JWT service, implements in-memory caching, and configures **Hangfire** servers for recurring background price sync jobs.
 5. **DealHawk.API (Presentation Layer):** A RESTful Web API exposing endpoints for authenticated requests. Includes exception handling middleware, custom CORS configurations, and hosts the interactive **Scalar API Reference** playground.
 6. **DealHawk.WebMVC (Presentation Layer):** An ASP.NET Core MVC frontend that consumes the API via a typed `DealHawkApiClient`. It uses cookie-based authentication, Bootstrap 5 for visual elements, and FontAwesome for iconography.
+
+---
+## 🗄️ Core Database Tables
+
+DealHawk stores synchronized game pricing data, user interactions, review workflows, and administrative logs within a relational SQL Server database.
+
+| Table | Purpose |
+|---------|---------|
+| ApplicationUser | Stores registered user accounts and Identity information |
+| Game | Main game catalog entity |
+| Publisher | Stores game publisher information |
+| Genre | Stores available game genres |
+| Platform | Stores supported gaming platforms |
+| GameGenre | Many-to-Many relationship between Games and Genres |
+| GamePlatform | Many-to-Many relationship between Games and Platforms |
+| Store | Digital storefront information (Steam, Epic, GOG, etc.) |
+| StoreGame | Links games to external store entries |
+| CurrentPrice | Stores latest synchronized prices from stores |
+| PriceHistory | Historical price snapshots used for trend tracking |
+| Wishlist | User wishlist entries |
+| Favorite | User favorite games |
+| PriceAlert | User-defined target price alerts |
+| Notification | Price drop and system notifications |
+| Review | User-submitted game reviews |
+| ReviewLike | Stores likes/upvotes for reviews |
+| AuditLog | Administrative activity and security logs |
+| StoreSyncLog | Background synchronization execution logs |
+
+**Total Domain Tables:** 18
+
+These entities support the complete DealHawk ecosystem, including catalog management, external price synchronization, historical analytics, wishlist tracking, favorites, notifications, review moderation, and administrative monitoring.
 
 ---
 
