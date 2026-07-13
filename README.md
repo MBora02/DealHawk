@@ -59,58 +59,6 @@ DealHawk is designed using the **Onion Architecture** (Clean Architecture) patte
 * **Testability:** Business rules can be unit tested without requiring real web servers or database connections.
 * **Separation of Concerns:** Distinct layers handle data representation, business services, scheduling, and view rendering.
 
-### Data Flow Diagram
-
-The diagram below illustrates how data and control flow through the application:
-
-```mermaid
-graph TD
-    subgraph Presentation & UI Layer
-        MVC[DealHawk.WebMVC (Razor Views, Bootstrap)]
-        API[DealHawk.API (Controllers, Scalar Docs)]
-    end
-
-    subgraph Infrastructure Layer
-        Hangfire[Hangfire (Scheduler & PriceSyncJob)]
-        CheapSharkClient[CheapShark API Client (HttpClient)]
-        Services[JWT, Cache, DateTime Services]
-    end
-
-    subgraph Persistence Layer
-        Context[ApplicationDbContext (SQL Server)]
-        Repos[Generic Repository & Unit of Work]
-        AdoNet[AdoNetStatsService (Raw SQL Stats)]
-    end
-
-    subgraph Application Layer (Core Logic)
-        CQRS[CQRS Patterns (MediatR Queries & Commands)]
-        Mapping[AutoMapper Profiles]
-        Validation[FluentValidation Rules]
-        Interfaces[Abstraction Interfaces]
-    end
-
-    subgraph Domain Layer (Core Enterprise)
-        Entities[Domain Entities]
-        Enums[Domain Enums]
-    end
-
-    %% Dependencies Flow Inwards
-    MVC -- HTTP Client Requests --> API
-    API --> Interfaces
-    API --> CQRS
-    
-    Hangfire --> Interfaces
-    CheapSharkClient --> Interfaces
-    Services --> Interfaces
-
-    Context --> Interfaces
-    Repos --> Interfaces
-    AdoNet --> Interfaces
-
-    CQRS --> Entities
-    Interfaces --> Entities
-    Enums --> Entities
-```
 
 ### Layer Responsibilities
 
