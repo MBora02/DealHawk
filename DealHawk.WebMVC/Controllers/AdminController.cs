@@ -30,10 +30,15 @@ namespace DealHawk.WebMVC.Controllers
 
                 return View();
             }
-            catch (System.Net.Http.HttpRequestException ex) when (ex.StatusCode == System.Net.HttpStatusCode.Unauthorized)
+            catch (System.Net.Http.HttpRequestException ex)
             {
-                TempData["Error"] = "Your session has expired. Please log in again.";
-                return RedirectToAction("Logout", "Auth");
+                if (ex.StatusCode == System.Net.HttpStatusCode.Unauthorized)
+                {
+                    TempData["Error"] = "Your session has expired. Please log in again.";
+                    return RedirectToAction("Logout", "Auth");
+                }
+                TempData["Error"] = "The backend API service is currently unavailable. Please make sure the API is running.";
+                return RedirectToAction("Index", "Home");
             }
         }
 
