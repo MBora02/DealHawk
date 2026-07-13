@@ -71,7 +71,7 @@ DealHawk is designed using the **Onion Architecture** (Clean Architecture) patte
 6. **DealHawk.WebMVC (Presentation Layer):** An ASP.NET Core MVC frontend that consumes the API via a typed `DealHawkApiClient`. It uses cookie-based authentication, Bootstrap 5 for visual elements, and FontAwesome for iconography.
 
 ---
-## 🗄️ Core Database Tables
+## Core Database Tables
 
 DealHawk stores synchronized game pricing data, user interactions, review workflows, and administrative logs within a relational SQL Server database.
 
