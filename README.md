@@ -129,64 +129,65 @@ graph TD
 Users can search the aggregated gaming database by title, filter by platforms (e.g., Steam, Epic Games, GOG), or narrow down selections by specific genres.
 * **Benefit:** Allows users to easily locate games and view deals without navigating multiple platforms.
 
-### Screenshot Placeholder
-**Insert Screenshot Here**
-* **Screen:** Catalog Page (`/Games/Index`)
-* **Visible Content:** List of game cards, search input box, genre and platform dropdown filters, current price badges with discount rates, and pagination bar.
-* **UI Elements:** Game thumbnails, price tags highlighted in green, navigation filters.
-* **Purpose:** Demonstrates the core search functionality and game list visualization to recruiters.
+<img width="1863" height="838" alt="image" src="https://github.com/user-attachments/assets/00541609-7af0-4dc2-985c-45b66790db47" />
+<img width="1390" height="496" alt="image" src="https://github.com/user-attachments/assets/ef823208-c2d8-4c7a-bcca-c14e408b4269" />
+<img width="1383" height="477" alt="image" src="https://github.com/user-attachments/assets/5403a5ac-27c1-4833-a39b-9c8f35d7e6ee" />
+
 
 ---
 
-### 2. Game Price Analytics & History
+### 2. Game Details, Price Analytics, History & Reviews
+<img width="852" height="853" alt="image" src="https://github.com/user-attachments/assets/b0aafcf6-29b0-4f0b-b486-48d2841dc82b" />
+<img width="1110" height="672" alt="image" src="https://github.com/user-attachments/assets/25525a5e-1e24-46c6-946b-267d17803f1a" />
+<img width="937" height="485" alt="image" src="https://github.com/user-attachments/assets/1c3cea44-9a09-4dff-9dd7-e8f1edbfee75" />
+
+
 Clicking any game displays a comprehensive details screen including current storefront prices, developer metadata, historical lowest price records, and a price timeline.
 * **Benefit:** Empowers gamers to check if a current deal is genuinely the lowest price ever offered or if they should wait for a better discount.
 
-### Screenshot Placeholder
-**Insert Screenshot Here**
-* **Screen:** Game Details Page (`/Games/Details/{id}`)
-* **Visible Content:** Game metadata, storefront price comparison grid (with external purchase links), price history list, wishlist/favorite toggle buttons, and user reviews.
-* **UI Elements:** Large game header, comparison table with "Go to Store" action buttons, rating average stars.
-* **Purpose:** Highlights how DealHawk gathers multi-store pricing and tracks historical price changes.
 
 ---
 
 ### 3. User Dashboard & Price Alerts
-A personalized space for users to manage favorites, add games to their wishlist (with optional target prices), set custom price thresholds for alerts, and view notifications.
-* **Benefit:** Automates bargain hunting by sending internal notifications directly to the user's dashboard when prices cross target thresholds.
-
-### Screenshot Placeholder
-**Insert Screenshot Here**
-* **Screen:** User Dashboard Page (`/Dashboard`)
-* **Visible Content:** Interactive tabs for "My Favorites", "Wishlist", "Active Price Alerts", and "Notification Inbox".
-* **UI Elements:** Target price fields, delete buttons for alerts, mark-as-read buttons for notifications.
-* **Purpose:** Displays custom user integrations, wishlist management, and the inbox messaging interface.
+<img width="902" height="618" alt="image" src="https://github.com/user-attachments/assets/eaca53ef-b0ec-4ce3-aaf8-be7017169f3e" />
+<img width="738" height="520" alt="image" src="https://github.com/user-attachments/assets/91ca14af-96d6-490b-9623-b8df26715c46" />
+<img width="1342" height="346" alt="image" src="https://github.com/user-attachments/assets/b97de3b1-31cd-400b-975c-1349a897aa64" />
+<img width="1346" height="392" alt="image" src="https://github.com/user-attachments/assets/adb105e0-0d2f-49a4-a6e6-3567e1a00064" />
 
 ---
 
-### 4. Admin Management Portal & Stats
-An administrative dashboard displaying real-time system stats (calculated via optimized ADO.NET queries), system activity logs, and background sync histories. Admins can manually trigger price updates, import games from CheapShark by title, or queue bulk imports.
-* **Benefit:** Ensures system administrators have full control over data updates, platform health, and imported content.
-
-### Screenshot Placeholder
-**Insert Screenshot Here**
-* **Screen:** Admin Portal Dashboard (`/Admin`)
-* **Visible Content:** Metric cards showing Total Games, Total Users, and Active Alerts; recent audit logs; store deal distributions; and background job log grids.
-* **UI Elements:** Metric cards, table grids for audit logs, buttons to trigger synchronization, text inputs for importing games.
-* **Purpose:** Showcases administrative features, background task status tracking, and high-performance ADO.NET dashboard statistics.
+### 4. Moderator Navbar & Control Panel
+<img width="1372" height="80" alt="image" src="https://github.com/user-attachments/assets/e4a54982-ad8f-4e48-b64d-56655c21dfc0" />
+<img width="1356" height="372" alt="image" src="https://github.com/user-attachments/assets/c5460bfb-175d-4314-a08e-e61167840e12" />
+<img width="905" height="302" alt="image" src="https://github.com/user-attachments/assets/4d30b995-2a99-4edd-890f-e034d028d513" />
 
 ---
 
-### 5. Review & Moderation Queue
-Users submit 1-5 star ratings and comment reviews. Reviews enter a moderation queue where administrators and moderators approve or reject them with feedback comments.
-* **Benefit:** Maintains a high-quality community space by filtering out spam and inappropriate content.
+### 5. Admin Management Navbar and Control Panel
+<img width="1335" height="53" alt="image" src="https://github.com/user-attachments/assets/cae984b6-83d1-45aa-b1c4-b245f8862ec6" />
+<img width="1106" height="812" alt="image" src="https://github.com/user-attachments/assets/6feac0ea-1424-4703-a80f-6a584cc0b550" />
+<img width="1265" height="540" alt="image" src="https://github.com/user-attachments/assets/c640621a-b9ac-4709-86d5-f3572a57baf3" />
+<img width="1247" height="830" alt="image" src="https://github.com/user-attachments/assets/66eb234d-34aa-432d-ac74-60d2387b6435" />
+<img width="1352" height="742" alt="image" src="https://github.com/user-attachments/assets/94d21179-5215-4ef9-8fb5-c653f6505a8d" />
+<img width="1335" height="845" alt="image" src="https://github.com/user-attachments/assets/a0bf177e-5c10-4e53-9d1d-a684188e72e3" />
+<img width="1323" height="571" alt="image" src="https://github.com/user-attachments/assets/e7ccf396-1af1-4ec9-97b6-4450e96c4384" />
+<img width="1348" height="585" alt="image" src="https://github.com/user-attachments/assets/ce9e9047-8b82-4bc8-8937-89c4332644ba" />
 
-### Screenshot Placeholder
-**Insert Screenshot Here**
-* **Screen:** Moderation Queue Page (`/Moderation`)
-* **Visible Content:** List of pending reviews detailing the game, reviewer name, rating stars, and comment text.
-* **UI Elements:** Approve/Reject text areas for moderator notes, confirmation buttons.
-* **Purpose:** Demonstrates review submission workflows and moderation controls.
+---
+
+### 6. Price Sync from CheapSharkAPI and Importing bulk games and admin single game import
+<img width="897" height="536" alt="image" src="https://github.com/user-attachments/assets/c0ca7c60-5a75-4a00-a08b-5a3c72569105" />
+<img width="461" height="332" alt="image" src="https://github.com/user-attachments/assets/079f9c53-19c5-43ac-809d-4b51ce2466e5" />
+
+---
+
+### 7. Hangfire Dashboard for Background Jobs
+<img width="1880" height="630" alt="image" src="https://github.com/user-attachments/assets/4db37222-123c-46d1-a16f-a22ebfc3f9bb" />
+<img width="1887" height="413" alt="image" src="https://github.com/user-attachments/assets/6c437a3c-baee-4d79-9a31-b9e8cfd10cc6" />
+<img width="1896" height="336" alt="image" src="https://github.com/user-attachments/assets/0c85d5fe-8095-475d-a662-ef0d6797a664" />
+
+
+
 
 ---
 
@@ -460,7 +461,8 @@ Proposed enhancements to build upon the current codebase:
 
 ## 📄 License
 
-No license file exists currently in this repository. It is recommended to add the **MIT License** to make it open-source friendly.
+This project is licensed under the **MIT License** - see the [LICENSE](file:///c:/Users/Bora/Desktop/DealHawk/LICENSE) file for details.
+
 
 ---
 
