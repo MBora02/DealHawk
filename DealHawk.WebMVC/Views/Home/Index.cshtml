@@ -3,6 +3,17 @@
     ViewData["Title"] = "Compare Game Prices & Hunt Deals";
 }
 
+@if (ViewBag.BackendError != null)
+{
+    <div class="alert alert-warning border-0 card-custom mb-4 py-3 d-flex align-items-center" role="alert" style="border-left: 4px solid var(--accent-purple) !important;">
+        <i class="fa-solid fa-triangle-exclamation text-purple me-3" style="font-size: 1.5rem; text-shadow: 0 0 10px var(--accent-purple);"></i>
+        <div>
+            <h5 class="alert-heading mb-1 fw-bold text-white">Connecting to API Backend...</h5>
+            <p class="mb-0 text-secondary" style="font-size: 0.95rem;">@ViewBag.BackendError</p>
+        </div>
+    </div>
+}
+
 <div class="row align-items-center py-5">
     <div class="col-lg-6 text-center text-lg-start mb-5 mb-lg-0">
         <h1 class="display-3 fw-bold mb-3" style="letter-spacing: -2px; line-height: 1.1;">

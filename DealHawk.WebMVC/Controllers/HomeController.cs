@@ -18,16 +18,29 @@ namespace DealHawk.WebMVC.Controllers
 
         public async Task<IActionResult> Index()
         {
-            var trendingPaged = await _apiClient.GetGamesAsync(pageSize: 4, sortBy: "trending");
-            var bestDealsPaged = await _apiClient.GetGamesAsync(pageSize: 4, sortBy: "savings");
-
-            var model = new HomeViewModel
+            try
             {
-                TrendingGames = trendingPaged.Items,
-                BestDeals = bestDealsPaged.Items
-            };
+                var trendingPaged = await _apiClient.GetGamesAsync(pageSize: 4, sortBy: "trending");
+                var bestDealsPaged = await _apiClient.GetGamesAsync(pageSize: 4, sortBy: "savings");
 
-            return View(model);
+                var model = new HomeViewModel
+                {
+                    TrendingGames = trendingPaged.Items,
+                    BestDeals = bestDealsPaged.Items
+                };
+
+                return View(model);
+            }
+            catch (System.Net.Http.HttpRequestException)
+            {
+                ViewBag.BackendError = "The backend API service is currently starting up or offline. Please wait a few seconds and refresh the page.";
+                var model = new HomeViewModel
+                {
+                    TrendingGames = new System.Collections.Generic.List<DealHawk.Application.DTOs.GameDto>(),
+                    BestDeals = new System.Collections.Generic.List<DealHawk.Application.DTOs.GameDto>()
+                };
+                return View(model);
+            }
         }
 
         public IActionResult Privacy()

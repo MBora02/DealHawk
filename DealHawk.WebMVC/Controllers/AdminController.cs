@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using DealHawk.WebMVC.Services;
 using System.Threading.Tasks;
@@ -18,15 +18,23 @@ namespace DealHawk.WebMVC.Controllers
 
         public async Task<IActionResult> Index()
         {
-            var stats = await _apiClient.GetDashboardStatsAsync();
-            var auditLogs = await _apiClient.GetAuditLogsAsync();
-            var syncLogs = await _apiClient.GetSyncLogsAsync();
+            try
+            {
+                var stats = await _apiClient.GetDashboardStatsAsync();
+                var auditLogs = await _apiClient.GetAuditLogsAsync();
+                var syncLogs = await _apiClient.GetSyncLogsAsync();
 
-            ViewBag.Stats = stats;
-            ViewBag.AuditLogs = auditLogs;
-            ViewBag.SyncLogs = syncLogs;
+                ViewBag.Stats = stats;
+                ViewBag.AuditLogs = auditLogs;
+                ViewBag.SyncLogs = syncLogs;
 
-            return View();
+                return View();
+            }
+            catch (System.Net.Http.HttpRequestException ex) when (ex.StatusCode == System.Net.HttpStatusCode.Unauthorized)
+            {
+                TempData["Error"] = "Your session has expired. Please log in again.";
+                return RedirectToAction("Logout", "Auth");
+            }
         }
 
         [HttpPost]

@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using DealHawk.WebMVC.Services;
 using System.Threading.Tasks;
@@ -18,8 +18,16 @@ namespace DealHawk.WebMVC.Controllers
 
         public async Task<IActionResult> Index()
         {
-            var pendingReviews = await _apiClient.GetPendingReviewsAsync();
-            return View(pendingReviews);
+            try
+            {
+                var pendingReviews = await _apiClient.GetPendingReviewsAsync();
+                return View(pendingReviews);
+            }
+            catch (System.Net.Http.HttpRequestException ex) when (ex.StatusCode == System.Net.HttpStatusCode.Unauthorized)
+            {
+                TempData["Error"] = "Your session has expired. Please log in again.";
+                return RedirectToAction("Logout", "Auth");
+            }
         }
 
         [HttpPost]

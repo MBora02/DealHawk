@@ -27,7 +27,21 @@ namespace DealHawk.WebMVC.Services
 
         private void AddAuthHeader()
         {
-            var token = _httpContextAccessor.HttpContext?.User?.FindFirstValue("Token");
+            var user = _httpContextAccessor.HttpContext?.User;
+            if (user != null)
+            {
+                Console.WriteLine($"[DealHawkApiClient] User IsAuthenticated: {user.Identity?.IsAuthenticated}");
+                foreach (var claim in user.Claims)
+                {
+                    Console.WriteLine($"[DEBUG Claim] {claim.Type} = {claim.Value}");
+                }
+            }
+            else
+            {
+                Console.WriteLine("[DealHawkApiClient] User is NULL");
+            }
+
+            var token = user?.FindFirstValue("Token");
             Console.WriteLine($"[DealHawkApiClient] Attaching Token: {(string.IsNullOrEmpty(token) ? "NULL/EMPTY" : token.Substring(0, 15) + "...")}");
             if (!string.IsNullOrEmpty(token))
             {

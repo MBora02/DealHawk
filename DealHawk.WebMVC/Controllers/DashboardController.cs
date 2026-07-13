@@ -18,17 +18,25 @@ namespace DealHawk.WebMVC.Controllers
 
         public async Task<IActionResult> Index()
         {
-            var favorites = await _apiClient.GetFavoritesAsync();
-            var wishlist = await _apiClient.GetWishlistAsync();
-            var alerts = await _apiClient.GetUserAlertsAsync();
-            var notifications = await _apiClient.GetNotificationsAsync();
+            try
+            {
+                var favorites = await _apiClient.GetFavoritesAsync();
+                var wishlist = await _apiClient.GetWishlistAsync();
+                var alerts = await _apiClient.GetUserAlertsAsync();
+                var notifications = await _apiClient.GetNotificationsAsync();
 
-            ViewBag.Favorites = favorites;
-            ViewBag.Wishlist = wishlist;
-            ViewBag.Alerts = alerts;
-            ViewBag.Notifications = notifications;
+                ViewBag.Favorites = favorites;
+                ViewBag.Wishlist = wishlist;
+                ViewBag.Alerts = alerts;
+                ViewBag.Notifications = notifications;
 
-            return View();
+                return View();
+            }
+            catch (System.Net.Http.HttpRequestException ex) when (ex.StatusCode == System.Net.HttpStatusCode.Unauthorized)
+            {
+                TempData["Error"] = "Your session has expired. Please log in again.";
+                return RedirectToAction("Logout", "Auth");
+            }
         }
 
         [HttpPost]
