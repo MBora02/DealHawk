@@ -356,6 +356,7 @@ DealHawk utilizes a decoupled authentication flow between the MVC UI and REST AP
 ## 🔌 API Endpoints
 
 The API is fully documented through the **Scalar API Playground**. Below is a summary of the main endpoints:
+Note:There are more but these are the main endpoints
 
 ### Auth Endpoints (`api/auth`)
 * `POST /register` - Register a new user account.
